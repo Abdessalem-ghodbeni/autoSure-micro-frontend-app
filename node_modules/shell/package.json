@@ -10,13 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@autosure/shared": "*",
+    "@autosure/ui": "*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^6.30.6",
-    "@autosure/shared": "*",
-    "@autosure/ui": "*"
+    "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
+    "@module-federation/vite": "^1.23.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",

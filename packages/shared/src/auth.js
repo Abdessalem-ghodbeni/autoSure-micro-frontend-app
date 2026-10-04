@@ -43,15 +43,55 @@ function loadInitialSession() {
 export const authStore = (globalThis[STORE_KEY] ??=
   createStore(loadInitialSession()));
 
-export function startSession(token) {
-  const payload = parseJwt(token);
+export function startSession(authResponse) {
+  const accessToken = authResponse?.accessToken;
+  const refreshToken = authResponse?.refreshToken;
+  const userDetails = authResponse?.userDetails;
+
+  if (!accessToken) {
+    throw new Error("Access token manquant dans la réponse de login.");
+  }
+
+  // Décodage du JWT
+  const payload = parseJwt(accessToken);
+
+  // On récupère le rôle depuis userDetails en priorité,
+  // puis authorities, puis JWT
+  const role =
+    userDetails?.role ??
+    userDetails?.authorities?.[0]?.authority ??
+    payload?.role ??
+    payload?.roles?.[0] ??
+    null;
+
+  // On ne garde que les données nécessaires
+  // et surtout PAS le password
   const user = {
-    email: payload?.sub ?? null,
-    role: payload?.role ?? payload?.roles?.[0] ?? null,
+    id: userDetails?.id ?? null,
+    email: userDetails?.email ?? payload?.sub ?? null,
+    nom: userDetails?.nom ?? null,
+    prenom: userDetails?.prenom ?? null,
+    numeroPhone: userDetails?.numeroPhone ?? null,
+    role,
+    isActive: userDetails?.isActive ?? false,
+    enabled: userDetails?.enabled ?? false,
   };
-  const session = { token, user };
+
+  // On conserve "token" pour rester compatible
+  // avec ton apiFetch() et ProtectedRoute()
+  const session = {
+    token: accessToken,
+    refreshToken,
+    user,
+  };
+
+  // Persistance de la session
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+
+  // Mise à jour du store partagé
   authStore.setState(session);
+
+  // Information des autres micro-frontends
   emitEvent(EVENTS.LOGIN, user);
 }
 

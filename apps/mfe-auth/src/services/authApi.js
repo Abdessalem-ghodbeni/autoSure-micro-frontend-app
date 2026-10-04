@@ -1,7 +1,7 @@
 import { apiFetch, readErrorMessage, startSession } from "@autosure/shared";
 
-const REGISTER_PATH = "/autoSure/registerAgent";
-const LOGIN_PATH = "/login";
+const REGISTER_PATH = "/autoSure/auth/registerAgent";
+const LOGIN_PATH = "/autoSure/auth/login";
 
 export async function register({ nom, prenom, email, password, numeroPhone }) {
   const body = new URLSearchParams({
@@ -37,5 +37,5 @@ export async function login({ email, password }) {
   }
 
   const data = await response.json();
-  startSession(data.token);
+  startSession(data);
 }
