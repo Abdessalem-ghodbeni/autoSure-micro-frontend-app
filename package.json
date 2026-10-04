@@ -1,0 +1,12 @@
+{
+  "name": "autosure-mfe",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:shell": "npm run dev -w apps/shell",
+    "dev:auth": "npm run dev -w apps/mfe-auth"
+  }
+}
